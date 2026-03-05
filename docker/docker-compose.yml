@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Multi-Agent Blog Generator API
+  blog-generator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: multi-agent-blog-generator
+    ports:
+      - "8000:8000"
+    environment:
+      # LLM Configuration
+      - LLM_PROVIDER=${LLM_PROVIDER:-ollama}
+      - LLM_MODEL=${LLM_MODEL:-llama3}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      
+      # Ollama Configuration
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      
+      # Search Configuration
+      - SEARCH_PROVIDER=${SEARCH_PROVIDER:-duckduckgo}
+      
+      # Application
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENVIRONMENT=production
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - agent-network
+
+  # Ollama Service (Local LLM)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-server
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - agent-network
+    # Pull model on startup
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        sleep 5
+        ollama pull llama3
+        wait
+
+volumes:
+  ollama-data:
+    driver: local
+
+networks:
+  agent-network:
+    driver: bridge
