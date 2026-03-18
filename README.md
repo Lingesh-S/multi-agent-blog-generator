@@ -1,5 +1,29 @@
-# multi-agent-blog-generator
-Production-ready multi-agent AI system built with LangGraph that orchestrates Researcher, Writer, and Editor agents to generate high-quality blog content.
 
-Features modular architecture, LLM provider abstraction, Docker deployment, CLI interface, and scalable design.
 
+## 🎯 Key Features
+
+### 🔄 **Multi-Agent Architecture**
+- **Researcher Agent**: Searches the web using DuckDuckGo/Serper/Tavily APIs
+- **Writer Agent**: Generates engaging blog content using LLMs
+- **Editor Agent**: Reviews quality and provides actionable feedback
+- **Orchestrator**: Coordinates workflow using LangGraph state machines
+
+### 🎨 **Flexible & Extensible**
+- 🔌 **Multiple LLM Support**: Ollama (local), OpenAI, or custom providers
+- 🔍 **Multiple Search Providers**: DuckDuckGo (free), Serper, Tavily
+- 🎭 **Customizable Tones**: Professional, casual, technical, friendly
+- 📊 **Configurable Parameters**: Word count, audience, requirements
+
+### 🏗️ **Production-Ready**
+- 🐳 **Docker Support**: Containerized deployment with docker-compose
+- ⚡ **CLI Interface**: Rich terminal UI with progress indicators
+- 🔧 **API Ready**: FastAPI framework prepared for REST endpoints
+- 📝 **Comprehensive Logging**: Structured logging with multiple levels
+- 🧪 **Testing Framework**: Unit tests with pytest and coverage
+
+### 📈 **Enterprise Features**
+- ✅ **Error Handling**: Retry logic with exponential backoff
+- ⚙️ **Configuration Management**: Environment-based with validation
+- 📊 **Monitoring**: Execution metrics and performance tracking
+- 🔐 **Security**: API key management and input validation
+- 🎯 **Scalability**: Stateless agents for horizontal scaling
