@@ -27,3 +27,35 @@
 - 📊 **Monitoring**: Execution metrics and performance tracking
 - 🔐 **Security**: API key management and input validation
 - 🎯 **Scalability**: Stateless agents for horizontal scaling
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Multi-Agent Orchestrator                      │
+│                         (LangGraph)                              │
+└─────────────────────────────────────────────────────────────────┘
+                                 │
+                    ┌────────────┼────────────┐
+                    ▼            ▼            ▼
+         ┌──────────────┐ ┌──────────┐ ┌──────────────┐
+         │  Researcher  │ │  Writer  │ │   Editor     │
+         │    Agent     │ │  Agent   │ │   Agent      │
+         └──────┬───────┘ └────┬─────┘ └──────┬───────┘
+                │              │               │
+                ▼              ▼               ▼
+         ┌──────────────┐ ┌──────────┐ ┌──────────────┐
+         │ Web Search   │ │   LLM    │ │   Quality    │
+         │ DuckDuckGo   │ │ Ollama/  │ │  Assessment  │
+         │ Serper/Tavily│ │  OpenAI  │ │   & Feedback │
+         └──────────────┘ └──────────┘ └──────────────┘
+
+                    Shared State (TypedDict)
+         ┌─────────────────────────────────────────┐
+         │ • topic, requirements, audience         │
+         │ • research_data, sources                │
+         │ • blog_post, metadata                   │
+         │ • quality_score, feedback               │
+         │ • execution_time, status                │
+         └─────────────────────────────────────────┘
+```
