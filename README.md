@@ -59,3 +59,9 @@
          │ • execution_time, status                │
          └─────────────────────────────────────────┘
 ```
+
+### Workflow
+1. **Researcher** searches the web and gathers information
+2. **Writer** creates blog post from research data
+3. **Editor** reviews quality and provides feedback
+4. *Optional*: Loop back to Writer for revisions based on feedback
