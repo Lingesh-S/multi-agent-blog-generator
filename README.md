@@ -65,3 +65,61 @@
 2. **Writer** creates blog post from research data
 3. **Editor** reviews quality and provides feedback
 4. *Optional*: Loop back to Writer for revisions based on feedback
+
+## 📁 Project Structure
+
+```
+multi-agent-blog-generator/
+├── src/
+│   ├── agents/              # Agent implementations
+│   │   ├── __init__.py
+│   │   ├── base.py         # Base agent class
+│   │   ├── researcher.py   # Researcher agent
+│   │   ├── writer.py       # Writer agent
+│   │   ├── editor.py       # Editor agent (NEW)
+│   │   └── orchestrator.py # Main workflow orchestrator
+│   ├── tools/              # External tools integration
+│   │   ├── __init__.py
+│   │   ├── search.py       # Web search tools
+│   │   └── llm.py          # LLM provider abstractions
+│   ├── state/              # State management
+│   │   ├── __init__.py
+│   │   └── schema.py       # State definitions
+│   ├── api/                # REST API (FastAPI)
+│   │   ├── __init__.py
+│   │   ├── app.py          # API application
+│   │   └── routes.py       # API endpoints
+│   ├── cli/                # Command-line interface
+│   │   ├── __init__.py
+│   │   └── main.py
+│   ├── config/             # Configuration management
+│   │   ├── __init__.py
+│   │   └── settings.py
+│   └── utils/              # Utility functions
+│       ├── __init__.py
+│       ├── logger.py
+│       └── validators.py
+├── tests/                  # Unit and integration tests
+│   ├── __init__.py
+│   ├── test_agents.py
+│   ├── test_orchestrator.py
+│   └── test_api.py
+├── examples/               # Example scripts
+│   ├── basic_usage.py
+│   ├── custom_workflow.py
+│   └── batch_processing.py
+├── docker/                 # Docker configuration
+│   ├── Dockerfile
+│   └── docker-compose.yml
+├── docs/                   # Documentation
+│   ├── architecture.md
+│   ├── adding_agents.md
+│   └── deployment.md
+├── .env.example           # Environment variables template
+├── .gitignore
+├── requirements.txt       # Production dependencies
+├── requirements-dev.txt   # Development dependencies
+├── pytest.ini            # Pytest configuration
+├── setup.py              # Package setup
+└── README.md
+```
