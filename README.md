@@ -65,7 +65,7 @@
 2. **Writer** creates blog post from research data
 3. **Editor** reviews quality and provides feedback
 4. *Optional*: Loop back to Writer for revisions based on feedback
-<<<<<<< HEAD
+
 
 ## 📁 Project Structure
 
@@ -125,4 +125,22 @@ multi-agent-blog-generator/
 └── README.md
 ```
 =======
->>>>>>> ad7f6090e02cdde589285489bcdbaaae2e2d1312
+
+
+
+## 🗺️ Roadmap
+
+### ✅ **Completed (v1.0)**
+- [x] Multi-agent architecture with LangGraph
+- [x] Researcher, Writer, and Editor agents
+- [x] Multiple LLM provider support
+- [x] CLI interface with Rich output
+- [x] Docker deployment
+- [x] Comprehensive documentation
+- [x] Unit testing framework
+
+### 🚧 **In Progress (v1.1)**
+- [ ] REST API implementation with FastAPI
+- [ ] Web-based UI dashboard
+- [ ] Advanced caching system
+- [ ] Prometheus metrics integration
