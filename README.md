@@ -65,6 +65,7 @@
 2. **Writer** creates blog post from research data
 3. **Editor** reviews quality and provides feedback
 4. *Optional*: Loop back to Writer for revisions based on feedback
+<<<<<<< HEAD
 
 ## 📁 Project Structure
 
@@ -123,3 +124,5 @@ multi-agent-blog-generator/
 ├── setup.py              # Package setup
 └── README.md
 ```
+=======
+>>>>>>> ad7f6090e02cdde589285489bcdbaaae2e2d1312
