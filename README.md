@@ -2,6 +2,8 @@
 
 > **A production-ready, scalable multi-agent system that orchestrates specialized AI agents to research topics and generate high-quality blog posts automatically.**
 
+Built with **LangGraph** for workflow orchestration, this project demonstrates advanced agentic AI patterns, state management, and enterprise-grade software architecture—perfect for showcasing ML engineering expertise.
+
 ## 🎯 Key Features
 
 ### 🔄 **Multi-Agent Architecture**
