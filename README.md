@@ -1,5 +1,7 @@
 # 🤖 Multi-Agent Blog Generator with LangGraph
 
+> **A production-ready, scalable multi-agent system that orchestrates specialized AI agents to research topics and generate high-quality blog posts automatically.**
+
 ## 🎯 Key Features
 
 ### 🔄 **Multi-Agent Architecture**
