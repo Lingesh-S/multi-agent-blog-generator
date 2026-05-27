@@ -166,3 +166,14 @@ multi-agent-blog-generator/
 - [ ] Plugin system for custom agents
 - [ ] Cloud deployment templates (AWS, GCP, Azure)
 - [ ] Integration with CMS platforms (WordPress, Medium)
+
+
+### Provider Options
+
+| Provider | Type | Cost | Pros | Cons |
+|----------|------|------|------|------|
+| **Ollama (llama3)** | LLM | Free | No API costs, runs locally | Requires powerful hardware |
+| **OpenAI (GPT-4)** | LLM | Paid | High quality, fast | Requires API key, costs money |
+| **DuckDuckGo** | Search | Free | No API key needed | Rate limited |
+| **Serper** | Search | Paid | Better results, faster | Requires API key |
+| **Tavily** | Search | Paid | AI-optimized search | Requires API key |
