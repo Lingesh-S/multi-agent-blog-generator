@@ -179,6 +179,7 @@ multi-agent-blog-generator/
 | **Tavily** | Search | Paid | AI-optimized search | Requires API key |
 
 
+
 ## 💼 Use Cases & Applications
 
 ### **Content Marketing**
