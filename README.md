@@ -94,7 +94,8 @@ multi-agent-blog-generator/
 │   │   ├── __init__.py
 │   │   ├── app.py          # API application
 │   │   └── routes.py       # API endpoints
-│   ├── cli/                # Command-line interface
+│   ├── cli/                
+ Command-line interface
 │   │   ├── __init__.py
 │   │   └── main.py
 │   ├── config/             # Configuration management
