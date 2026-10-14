@@ -22,12 +22,10 @@ if requirements_file.exists():
 setup(
     name="multi-agent-blog-generator",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
     description="A scalable multi-agent system for automated blog generation",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/multi-agent-blog-generator",
+    url="https://github.com/Lingesh-S/multi-agent-blog-generator",
     packages=find_packages(exclude=["tests", "examples", "docs"]),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -35,12 +33,11 @@ setup(
         "Topic :: Software Development :: Libraries :: Application Frameworks",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
     ],
-    python_requires=">=3.9",
+    python_requires=">=3.10",
     install_requires=requirements,
     extras_require={
         "dev": [
@@ -61,5 +58,6 @@ setup(
         ],
     },
     include_package_data=True,
+    package_data={"src.api": ["static/*.html", "static/*.css", "static/*.js"]},
     zip_safe=False,
 )
