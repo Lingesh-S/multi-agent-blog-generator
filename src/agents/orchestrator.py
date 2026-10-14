@@ -16,6 +16,10 @@ from src.agents.editor import EditorAgent
 from src.config import get_settings
 
 
+class WorkflowExecutionError(RuntimeError):
+    """Raised when one or more workflow agents fail to produce a blog post."""
+
+
 class MultiAgentOrchestrator:
     """
     Main orchestrator that builds and executes the multi-agent workflow.
@@ -121,6 +125,16 @@ class MultiAgentOrchestrator:
         # Execute workflow
         try:
             result = self.app.invoke(initial_state)
+
+            failed_agents = [
+                name for name, status in result.get("agent_status", {}).items()
+                if getattr(status, "value", status) == "failed"
+            ]
+            if failed_agents or not result.get("blog_post"):
+                names = ", ".join(failed_agents) if failed_agents else "workflow"
+                raise WorkflowExecutionError(
+                    f"{names} did not produce a blog post; check provider configuration and logs"
+                )
             
             self.logger.info("Workflow completed successfully")
             self._log_execution_summary(result)
