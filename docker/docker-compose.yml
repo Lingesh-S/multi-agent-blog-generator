@@ -20,10 +20,19 @@ services:
       
       # Search Configuration
       - SEARCH_PROVIDER=${SEARCH_PROVIDER:-duckduckgo}
+      - SEARCH_MAX_RESULTS=${SEARCH_MAX_RESULTS:-5}
+      - SEARCH_TIMEOUT=${SEARCH_TIMEOUT:-10}
+      - SERPER_API_KEY=${SERPER_API_KEY:-}
+      - TAVILY_API_KEY=${TAVILY_API_KEY:-}
       
       # Application
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - ENVIRONMENT=production
+      - EDITOR_ENABLED=${EDITOR_ENABLED:-true}
+      - CACHE_ENABLED=${CACHE_ENABLED:-true}
+      - CACHE_TTL=${CACHE_TTL:-3600}
+      - PROMETHEUS_ENABLED=${PROMETHEUS_ENABLED:-false}
+      - RATE_LIMIT_ENABLED=${RATE_LIMIT_ENABLED:-true}
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data

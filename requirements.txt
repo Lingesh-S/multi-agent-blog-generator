@@ -27,6 +27,7 @@ aiohttp>=3.9.0
 
 # Logging & Monitoring
 loguru>=0.7.0
+prometheus-client>=0.20.0
 
 # Data Validation
 python-multipart>=0.0.6

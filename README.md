@@ -1,189 +1,92 @@
-# 🤖 Multi-Agent Blog Generator with LangGraph
+# Multi-Agent Blog Generator
 
-> **A production-ready, scalable multi-agent system that orchestrates specialized AI agents to research topics and generate high-quality blog posts automatically.**
+Research a topic and turn it into an edited blog post with a coordinated team of AI agents. Use the web dashboard, the command line, or the HTTP API.
 
-Built with **LangGraph** for workflow orchestration, this project demonstrates advanced agentic AI patterns, state management, and enterprise-grade software architecture—perfect for showcasing ML engineering expertise.    
+## What it does
 
-## 🎯 Key Features
+- Researches topics with DuckDuckGo, Serper, or Tavily.
+- Drafts and reviews articles with Ollama or OpenAI.
+- Supports iterative editing, configurable audience, tone, and length.
+- Caches successful search results with configurable TTL and size limits.
+- Includes a responsive dashboard, REST API, CLI, Docker setup, and optional Prometheus metrics.
 
-### 🔄 **Multi-Agent Architecture**
-- **Researcher Agent**: Searches the web using DuckDuckGo/Serper/Tavily APIs
-- **Writer Agent**: Generates engaging blog content using LLMs
-- **Editor Agent**: Reviews quality and provides actionable feedback
-- **Orchestrator**: Coordinates workflow using LangGraph state machines
+## Quick start
 
-### 🎨 **Flexible & Extensible**
-- 🔌 **Multiple LLM Support**: Ollama (local), OpenAI, or custom providers
-- 🔍 **Multiple Search Providers**: DuckDuckGo (free), Serper, Tavily
-- 🎭 **Customizable Tones**: Professional, casual, technical, friendly
-- 📊 **Configurable Parameters**: Word count, audience, requirements
+Requires Python 3.10 or newer. For local generation, install [Ollama](https://ollama.com/) and pull a model, or configure an OpenAI API key.
 
-### 🏗️ **Production-Ready**
-- 🐳 **Docker Support**: Containerized deployment with docker-compose
-- ⚡ **CLI Interface**: Rich terminal UI with progress indicators
-- 🔧 **API Ready**: FastAPI framework prepared for REST endpoints
-- 📝 **Comprehensive Logging**: Structured logging with multiple levels
-- 🧪 **Testing Framework**: Unit tests with pytest and coverage
-
-### 📈 **Enterprise Features**
-- ✅ **Error Handling**: Retry logic with exponential backoff
-- ⚙️ **Configuration Management**: Environment-based with validation
-- 📊 **Monitoring**: Execution metrics and performance tracking
-- 🔐 **Security**: API key management and input validation
-- 🎯 **Scalability**: Stateless agents for horizontal scaling
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Multi-Agent Orchestrator                      │
-│                         (LangGraph)                              │
-└─────────────────────────────────────────────────────────────────┘
-                                 │
-                    ┌────────────┼────────────┐
-                    ▼            ▼            ▼
-         ┌──────────────┐ ┌──────────┐ ┌──────────────┐
-         │  Researcher  │ │  Writer  │ │   Editor     │
-         │    Agent     │ │  Agent   │ │   Agent      │
-         └──────┬───────┘ └────┬─────┘ └──────┬───────┘
-                │              │               │
-                ▼              ▼               ▼
-         ┌──────────────┐ ┌──────────┐ ┌──────────────┐
-         │ Web Search   │ │   LLM    │ │   Quality    │
-         │ DuckDuckGo   │ │ Ollama/  │ │  Assessment  │
-         │ Serper/Tavily│ │  OpenAI  │ │   & Feedback │
-         └──────────────┘ └──────────┘ └──────────────┘
-
-                    Shared State (TypedDict)
-         ┌─────────────────────────────────────────┐
-         │ • topic, requirements, audience         │
-         │ • research_data, sources                │
-         │ • blog_post, metadata                   │
-         │ • quality_score, feedback               │
-         │ • execution_time, status                │
-         └─────────────────────────────────────────┘
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+ollama pull llama3
+uvicorn src.api.app:app --reload
 ```
 
-### Workflow
-1. **Researcher** searches the web and gathers information
-2. **Writer** creates blog post from research data
-3. **Editor** reviews quality and provides feedback
-4. *Optional*: Loop back to Writer for revisions based on feedback
+Open [http://localhost:8000](http://localhost:8000) for the dashboard, or use the CLI:
 
-
-## 📁 Project Structure
-
+```bash
+python -m src.cli.main generate --topic "Community solar" --audience "local leaders" --words 700 --format markdown --output article.md
 ```
-multi-agent-blog-generator/
-├── src/
-│   ├── agents/              # Agent implementations
-│   │   ├── __init__.py
-│   │   ├── base.py         # Base agent class
-│   │   ├── researcher.py   # Researcher agent
-│   │   ├── writer.py       # Writer agent
-│   │   ├── editor.py       # Editor agent (NEW)
-│   │   └── orchestrator.py # Main workflow orchestrator
-│   ├── tools/              # External tools integration
-│   │   ├── __init__.py
-│   │   ├── search.py       # Web search tools
-│   │   └── llm.py          # LLM provider abstractions
-│   ├── state/              # State management
-│   │   ├── __init__.py
-│   │   └── schema.py       # State definitions
-│   ├── api/                # REST API (FastAPI)
-│   │   ├── __init__.py
-│   │   ├── app.py          # API application
-│   │   └── routes.py       # API endpoints
-│   ├── cli/                
- Command-line interface
-│   │   ├── __init__.py
-│   │   └── main.py
-│   ├── config/             # Configuration management
-│   │   ├── __init__.py
-│   │   └── settings.py
-│   └── utils/              # Utility functions
-│       ├── __init__.py
-│       ├── logger.py
-│       └── validators.py
-├── tests/                  # Unit and integration tests
-│   ├── __init__.py
-│   ├── test_agents.py
-│   ├── test_orchestrator.py
-│   └── test_api.py
-├── examples/               # Example scripts
-│   ├── basic_usage.py
-│   ├── custom_workflow.py
-│   └── batch_processing.py
-├── docker/                 # Docker configuration
-│   ├── Dockerfile
-│   └── docker-compose.yml
-├── docs/                   # Documentation
-│   ├── architecture.md
-│   ├── adding_agents.md
-│   └── deployment.md
-├── .env.example           # Environment variables template
-├── .gitignore
-├── requirements.txt       # Production dependencies
-├── requirements-dev.txt   # Development dependencies
-├── pytest.ini            # Pytest configuration
-├── setup.py              # Package setup
-└── README.md
+
+## HTTP API
+
+`POST /api/v1/generate` accepts JSON:
+
+```json
+{
+  "topic": "Community solar",
+  "user_requirements": "Focus on practical benefits and trade-offs",
+  "target_audience": "local leaders",
+  "tone": "professional",
+  "word_count": 700
+}
 ```
-=======
 
+The response includes the article title and content, metadata, research sources, quality score, and per-agent execution times. Inputs are validated; provider/workflow failures return an error response. Interactive API docs are available at `/docs`, and `/health` reports service liveness. Generation requests are rate-limited in memory per client process; use an API gateway or shared limiter when deploying multiple workers.
 
-## 🗺️ Roadmap
+## Configuration
 
-### ✅ **Completed (v1.0)**
-- [x] Multi-agent architecture with LangGraph
-- [x] Researcher, Writer, and Editor agents
-- [x] Multiple LLM provider support
-- [x] CLI interface with Rich output
-- [x] Docker deployment
-- [x] Comprehensive documentation
-- [x] Unit testing framework
+Settings are loaded from environment variables or a local `.env` file. The table below lists common options; the remaining settings are defined in `src/config/settings.py`.
 
-### 🚧 **In Progress (v1.1)**
-- [ ] REST API implementation with FastAPI
-- [ ] Web-based UI dashboard
-- [ ] Advanced caching system
-- [ ] Prometheus metrics integration
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `LLM_PROVIDER` | `ollama` | `ollama` or `openai` |
+| `LLM_MODEL` | `llama3` | Model name for the selected provider |
+| `OPENAI_API_KEY` | unset | Required when using OpenAI |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server address |
+| `SEARCH_PROVIDER` | `duckduckgo` | `duckduckgo`, `serper`, or `tavily` |
+| `SERPER_API_KEY` / `TAVILY_API_KEY` | unset | Required by the matching search provider |
+| `CACHE_ENABLED` | `true` | Enable successful search result caching |
+| `CACHE_TTL` | `3600` | Cache lifetime in seconds |
+| `PROMETHEUS_ENABLED` | `false` | Expose HTTP metrics at `/metrics` |
+| `CORS_ORIGINS` | `http://localhost:3000` | Allowed browser origins |
 
-### 🔮 **Planned (v2.0)**
-- [ ] **RAG Integration**: Add vector database for knowledge retrieval
-- [ ] **Multi-language Support**: Generate content in multiple languages
-- [ ] **Image Generation**: Integrate DALL-E or Stable Diffusion
-- [ ] **SEO Optimizer Agent**: Optimize content for search engines
-- [ ] **Social Media Agent**: Format content for different platforms
-- [ ] **A/B Testing**: Test different prompts and strategies
-- [ ] **Analytics Dashboard**: Track performance metrics
-- [ ] **Custom Templates**: Pre-defined blog styles and formats
+## Use cases
 
-### 🌟 **Future Possibilities**
-- [ ] Fine-tuned models for specific domains
-- [ ] Multi-modal content (text + images + videos)
-- [ ] Real-time collaboration features
-- [ ] Plugin system for custom agents
-- [ ] Cloud deployment templates (AWS, GCP, Azure)
-- [ ] Integration with CMS platforms (WordPress, Medium)
+- Generate blog posts and newsletters for content marketing.
+- Create technical explainers for developers and customers.
+- Draft product descriptions based on researched features and audience needs.
+- Turn current research into a first draft for editorial review.
 
+## Docker
 
-### Provider Options
+From the repository root, configure provider environment variables (or a local `.env` file) and start the API plus Ollama:
 
-| Provider | Type | Cost | Pros | Cons |
-|----------|------|------|------|------|
-| **Ollama (llama3)** | LLM | Free | No API costs, runs locally | Requires powerful hardware |
-| **OpenAI (GPT-4)** | LLM | Paid | High quality, fast | Requires API key, costs money |
-| **DuckDuckGo** | Search | Free | No API key needed | Rate limited |
-| **Serper** | Search | Paid | Better results, faster | Requires API key |
-| **Tavily** | Search | Paid | AI-optimized search | Requires API key |
+```bash
+docker compose -f docker/docker-compose.yml up --build
+```
 
+The dashboard is available at `http://localhost:8000`. The compose setup starts Ollama and pulls the configured default model on first launch; first model download can take several minutes.
 
+## Development
 
-## 💼 Use Cases & Applications
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
 
-### **Content Marketing**
-- Generate blog posts for company blogs
-- Create technical documentation
-- Write product descriptions
-- Draft newsletter content
+Core modules live under `src/agents`, `src/tools`, `src/api`, `src/cli`, and `src/state`. See [docs/architecture.md](docs/architecture.md) for the workflow and [docs/QUICKSTART.md](docs/QUICKSTART.md) for API and deployment examples.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

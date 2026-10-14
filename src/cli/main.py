@@ -47,7 +47,7 @@ def generate(topic, requirements, audience, tone, words, output, format, verbose
     is_valid, error = validate_configuration()
     if not is_valid:
         console.print(f"[red]Configuration error: {error}[/red]")
-        return
+        raise click.ClickException(error)
     
     console.print(Panel.fit(
         f"[bold]Topic:[/bold] {topic}\n"
@@ -83,7 +83,7 @@ def generate(topic, requirements, audience, tone, words, output, format, verbose
             console.print(f"[red]Error: {str(e)}[/red]")
             if verbose:
                 console.print_exception()
-            return
+            raise click.ClickException(str(e)) from e
     
     # Display results
     _display_results(result, format, output)

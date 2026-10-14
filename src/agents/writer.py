@@ -55,15 +55,24 @@ class WriterAgent(BaseAgent):
         
         self.logger.info(f"Writing blog post about: {topic}")
         
-        # Build prompt
-        prompt = self._build_writing_prompt(
-            topic=topic,
-            research_data=research_data,
-            target_audience=target_audience,
-            tone=tone,
-            word_count=word_count,
-            user_requirements=user_requirements
-        )
+        feedback = state.get("editor_feedback")
+        if state.get("blog_post") and feedback:
+            prompt = self._build_revision_prompt(
+                blog_post=state["blog_post"],
+                feedback=feedback,
+                target_audience=target_audience,
+                tone=tone,
+                word_count=word_count,
+            )
+        else:
+            prompt = self._build_writing_prompt(
+                topic=topic,
+                research_data=research_data,
+                target_audience=target_audience,
+                tone=tone,
+                word_count=word_count,
+                user_requirements=user_requirements
+            )
         
         # Generate blog post
         blog_post = self.llm.generate(prompt)
@@ -92,6 +101,26 @@ class WriterAgent(BaseAgent):
             "blog_metadata": metadata,
             "draft_iterations": draft_iterations
         }
+
+    def _build_revision_prompt(
+        self,
+        blog_post: str,
+        feedback: str,
+        target_audience: str,
+        tone: str,
+        word_count: int,
+    ) -> str:
+        return f"""Revise the blog post below using the editor's feedback.
+
+EDITOR FEEDBACK:
+{feedback}
+
+CURRENT DRAFT:
+{blog_post}
+
+Keep the article focused on its existing topic, preserve accurate details, write for
+{target_audience} in a {tone} tone, and aim for approximately {word_count} words.
+Return only the revised article, without a title."""
     
     def _build_writing_prompt(
         self,
