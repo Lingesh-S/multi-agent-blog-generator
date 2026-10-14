@@ -11,7 +11,7 @@ import time
 from src.agents.base import BaseAgent
 from src.state.schema import AgentState, ResearchQuality
 from src.tools.search import SearchTool
-from src.config import get_settings
+from src.config import get_settings, get_search_config
 
 
 class ResearcherAgent(BaseAgent):
@@ -29,10 +29,13 @@ class ResearcherAgent(BaseAgent):
         super().__init__(name="Researcher", config=config)
         
         settings = get_settings()
+        search_config = get_search_config()
         self.search_tool = SearchTool(
-            provider=settings.search_provider,
-            max_results=settings.search_max_results,
-            timeout=settings.search_timeout
+            provider=search_config["provider"],
+            max_results=search_config["max_results"],
+            timeout=search_config["timeout"],
+            api_key=(search_config.get("serper_api_key") if search_config["provider"] == "serper"
+                     else search_config.get("tavily_api_key"))
         )
         
         self.max_retries = settings.researcher_retries

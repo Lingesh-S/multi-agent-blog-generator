@@ -7,6 +7,9 @@ Provides web search functionality using various providers.
 from typing import List, Dict, Any, Optional
 import logging
 from abc import ABC, abstractmethod
+from collections import OrderedDict
+from threading import RLock
+from time import monotonic
 
 try:
     from duckduckgo_search import DDGS
@@ -191,7 +194,10 @@ class SearchTool:
         provider: str = "duckduckgo",
         max_results: int = 5,
         timeout: int = 10,
-        api_key: Optional[str] = None
+        api_key: Optional[str] = None,
+        cache_enabled: Optional[bool] = None,
+        cache_ttl: Optional[int] = None,
+        cache_max_size: Optional[int] = None,
     ):
         """
         Initialize search tool with specified provider.
@@ -204,6 +210,13 @@ class SearchTool:
         """
         self.max_results = max_results
         self.logger = logging.getLogger("search.tool")
+        from src.config import get_settings
+        settings = get_settings()
+        self.cache_enabled = settings.cache_enabled if cache_enabled is None else cache_enabled
+        self.cache_ttl = settings.cache_ttl if cache_ttl is None else cache_ttl
+        self.cache_max_size = settings.cache_max_size if cache_max_size is None else cache_max_size
+        self._cache = OrderedDict()
+        self._cache_lock = RLock()
         
         # Initialize provider
         if provider == "duckduckgo":
@@ -233,9 +246,38 @@ class SearchTool:
             List of search result dictionaries
         """
         results_limit = max_results or self.max_results
-        
+        cache_key = (query, results_limit)
+        if self.cache_enabled:
+            cached = self._get_cached(cache_key)
+            if cached is not None:
+                self.logger.debug("Returning cached search results")
+                return cached
+
         self.logger.debug(f"Searching for: {query} (max_results={results_limit})")
         
         results = self.provider.search(query, max_results=results_limit)
         
+        if self.cache_enabled and results:
+            self._set_cached(cache_key, results)
         return results
+
+    def _get_cached(self, key: tuple) -> Optional[List[Dict[str, Any]]]:
+        with self._cache_lock:
+            cached = self._cache.get(key)
+            if cached is None:
+                return None
+            expires_at, results = cached
+            if expires_at <= monotonic():
+                del self._cache[key]
+                return None
+            self._cache.move_to_end(key)
+            return [result.copy() for result in results]
+
+    def _set_cached(self, key: tuple, results: List[Dict[str, Any]]) -> None:
+        if self.cache_max_size <= 0 or self.cache_ttl <= 0:
+            return
+        with self._cache_lock:
+            self._cache[key] = (monotonic() + self.cache_ttl, [item.copy() for item in results])
+            self._cache.move_to_end(key)
+            while len(self._cache) > self.cache_max_size:
+                self._cache.popitem(last=False)
