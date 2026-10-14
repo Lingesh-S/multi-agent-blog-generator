@@ -132,7 +132,6 @@ multi-agent-blog-generator/
 =======
 
 
-
 ## 🗺️ Roadmap
 
 ### ✅ **Completed (v1.0)**
