@@ -42,7 +42,7 @@ python -m src.cli.main generate --topic "Community solar" --audience "local lead
 }
 ```
 
-The response includes the article title and content, metadata, research sources, quality score, and per-agent execution times. Inputs are validated; provider/workflow failures return an error response. Interactive API docs are available at `/docs`, and `/health` reports service readiness. Generation requests are rate-limited in memory per client process; use an API gateway or shared limiter when deploying multiple workers.
+The response includes the article title and content, metadata, research sources, quality score, and per-agent execution times. Inputs are validated; provider/workflow failures return an error response. Interactive API docs are available at `/docs`, and `/health` reports service liveness. Generation requests are rate-limited in memory per client process; use an API gateway or shared limiter when deploying multiple workers.
 
 ## Configuration
 
@@ -60,6 +60,13 @@ Settings are loaded from environment variables or a local `.env` file. The table
 | `CACHE_TTL` | `3600` | Cache lifetime in seconds |
 | `PROMETHEUS_ENABLED` | `false` | Expose HTTP metrics at `/metrics` |
 | `CORS_ORIGINS` | `http://localhost:3000` | Allowed browser origins |
+
+## Use cases
+
+- Generate blog posts and newsletters for content marketing.
+- Create technical explainers for developers and customers.
+- Draft product descriptions based on researched features and audience needs.
+- Turn current research into a first draft for editorial review.
 
 ## Docker
 
