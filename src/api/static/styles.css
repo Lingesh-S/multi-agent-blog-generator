@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap');
+
+:root {
+  color-scheme: light;
+  --ink: #202924;
+  --muted: #707973;
+  --line: #dce2dc;
+  --paper: #f5f7f4;
+  --white: #fff;
+  --green: #24684e;
+  --green-dark: #174a38;
+  --lime: #d8e7c4;
+  font-family: "DM Sans", sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; color: var(--ink); background: var(--paper); }
+.topbar { height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 5.5vw; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.78); }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 700; font-size: 16px; text-decoration: none; }
+.mark { display: grid; place-items: center; width: 28px; height: 28px; color: white; background: var(--green); font-family: "Newsreader", serif; font-size: 19px; }
+.service-state { display: flex; align-items: center; gap: 8px; color: var(--muted); font-family: "DM Mono", monospace; font-size: 11px; }
+.service-dot { width: 7px; height: 7px; border-radius: 50%; background: #61a77b; box-shadow: 0 0 0 3px #e0eee3; }
+.workspace { display: grid; grid-template-columns: minmax(320px, 440px) minmax(0, 1fr); min-height: calc(100vh - 68px); }
+.composer { padding: 54px clamp(24px, 5.5vw, 84px); border-right: 1px solid var(--line); background: var(--white); }
+.eyebrow { margin: 0 0 15px; color: var(--green); font: 500 10px "DM Mono", monospace; letter-spacing: 1.1px; }
+h1, #article-title { font-family: "Newsreader", Georgia, serif; font-weight: 500; letter-spacing: 0; }
+h1 { max-width: 390px; margin: 0; font-size: 40px; line-height: 1.08; }
+.intro { max-width: 345px; margin: 14px 0 32px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+form { display: grid; gap: 10px; }
+label { margin-top: 8px; font-size: 12px; font-weight: 700; }
+.optional { margin-left: 7px; color: #89928c; font: 10px "DM Mono", monospace; }
+textarea, input, select { width: 100%; border: 1px solid var(--line); border-radius: 3px; outline: none; background: #fff; color: var(--ink); font: 13px "DM Sans", sans-serif; transition: border-color .16s, box-shadow .16s; }
+textarea { min-height: 72px; resize: vertical; padding: 12px 13px; line-height: 1.5; }
+textarea:first-of-type { min-height: 82px; }
+input, select { height: 40px; padding: 0 11px; }
+textarea:focus, input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(36,104,78,.1); }
+::placeholder { color: #9ba39d; }
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 12px; margin-top: 7px; }
+.field-grid > div { display: grid; gap: 7px; }
+.field-grid > div:last-child { grid-column: 1 / -1; max-width: 50%; }
+.number-field { position: relative; }
+.number-field input { padding-right: 55px; }
+.number-field span { position: absolute; right: 11px; top: 12px; color: var(--muted); font-size: 11px; pointer-events: none; }
+button { font: inherit; }
+#submit-button { display: flex; justify-content: space-between; align-items: center; min-height: 46px; margin-top: 12px; padding: 0 14px; border: 0; border-radius: 3px; color: white; background: var(--green); cursor: pointer; font-size: 13px; font-weight: 600; transition: background .15s; }
+#submit-button:hover { background: var(--green-dark); }
+#submit-button:disabled { cursor: wait; opacity: .72; }
+#submit-button span:last-child { font-size: 19px; }
+.form-error { margin: 3px 0 0; color: #a03f32; font-size: 12px; line-height: 1.5; }
+.result { min-width: 0; padding: clamp(30px, 6vw, 88px); background: radial-gradient(ellipse at 85% 4%, rgba(216,231,196,.48), transparent 33%), var(--paper); }
+.result[aria-busy="true"] { cursor: progress; }
+.empty-state { display: grid; justify-items: center; align-content: center; min-height: 65vh; text-align: center; }
+.empty-icon { position: relative; display: grid; gap: 5px; width: 40px; padding: 10px 9px; border: 1px solid #c6d1c6; transform: rotate(-4deg); background: rgba(255,255,255,.55); }
+.empty-icon span { height: 2px; background: #8aa18d; }
+.empty-icon span:nth-child(2) { width: 75%; }
+.empty-state h2 { margin: 22px 0 7px; font: 500 24px "Newsreader", Georgia, serif; }
+.empty-state p { max-width: 290px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+#article { max-width: 780px; margin: 0 auto; }
+.article-meta { display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--green); font: 11px "DM Mono", monospace; text-transform: uppercase; }
+.icon-button { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); background: white; cursor: pointer; font-size: 18px; }
+.icon-button:hover { border-color: var(--green); color: var(--green); }
+#article-title { max-width: 720px; margin: 24px 0 12px; font-size: clamp(34px, 4vw, 52px); line-height: 1.06; }
+.article-stats { padding: 12px 0 20px; border-bottom: 1px solid var(--line); color: var(--muted); font: 10px "DM Mono", monospace; }
+.article-content { padding-top: 13px; color: #39433d; font: 16px/1.8 "Newsreader", Georgia, serif; }
+.article-content p { margin: 0 0 18px; white-space: pre-wrap; }
+.sources { margin-top: 34px; padding-top: 17px; border-top: 1px solid var(--line); }
+.sources h3 { margin: 0 0 10px; font: 600 11px "DM Mono", monospace; text-transform: uppercase; }
+.sources ol { padding-left: 20px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.sources li { padding: 4px 0; }
+.sources a { color: var(--green); }
+[hidden] { display: none !important; }
+
+@media (max-width: 760px) {
+  .topbar { height: 58px; padding: 0 20px; }
+  .workspace { display: block; }
+  .composer { padding: 34px 22px 30px; border-right: 0; border-bottom: 1px solid var(--line); }
+  h1 { max-width: 360px; font-size: 36px; }
+  .intro { margin-bottom: 23px; }
+  .result { min-height: 370px; padding: 36px 23px 58px; }
+  .empty-state { min-height: 280px; }
+  .article-content { font-size: 15px; }
+}

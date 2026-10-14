@@ -5,14 +5,20 @@ Handles environment variables and application settings.
 """
 
 from typing import Optional, List
-from pydantic_settings import BaseSettings
-from pydantic import Field, validator
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 import os
 
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+    )
     
     # LLM Configuration
     llm_provider: str = Field(default="ollama", description="LLM provider to use")
@@ -57,8 +63,8 @@ class Settings(BaseSettings):
     
     # Rate Limiting
     rate_limit_enabled: bool = Field(default=True)
-    rate_limit_requests: int = Field(default=100)
-    rate_limit_period: int = Field(default=3600)
+    rate_limit_requests: int = Field(default=100, ge=1)
+    rate_limit_period: int = Field(default=3600, ge=1)
     
     # Agent Configuration
     researcher_retries: int = Field(default=3, ge=1)
@@ -67,8 +73,8 @@ class Settings(BaseSettings):
     
     # Cache Configuration
     cache_enabled: bool = Field(default=True)
-    cache_ttl: int = Field(default=3600)
-    cache_max_size: int = Field(default=1000)
+    cache_ttl: int = Field(default=3600, ge=0)
+    cache_max_size: int = Field(default=1000, ge=0)
     
     # Performance
     max_concurrent_agents: int = Field(default=5, ge=1)
@@ -81,28 +87,32 @@ class Settings(BaseSettings):
     sentry_dsn: Optional[str] = None
     prometheus_enabled: bool = Field(default=False)
     
-    @validator("llm_provider")
+    @field_validator("llm_provider")
+    @classmethod
     def validate_llm_provider(cls, v):
         allowed = ["ollama", "openai"]
         if v not in allowed:
             raise ValueError(f"LLM provider must be one of {allowed}")
         return v
     
-    @validator("search_provider")
+    @field_validator("search_provider")
+    @classmethod
     def validate_search_provider(cls, v):
         allowed = ["duckduckgo", "serper", "tavily"]
         if v not in allowed:
             raise ValueError(f"Search provider must be one of {allowed}")
         return v
     
-    @validator("environment")
+    @field_validator("environment")
+    @classmethod
     def validate_environment(cls, v):
         allowed = ["development", "staging", "production"]
         if v not in allowed:
             raise ValueError(f"Environment must be one of {allowed}")
         return v
     
-    @validator("log_level")
+    @field_validator("log_level")
+    @classmethod
     def validate_log_level(cls, v):
         allowed = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         v_upper = v.upper()
@@ -125,12 +135,6 @@ class Settings(BaseSettings):
         
         return missing
     
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
-
-
 @lru_cache()
 def get_settings() -> Settings:
     """

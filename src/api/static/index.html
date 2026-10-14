@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7f4">
+    <title>Fieldnotes | Blog Generator</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Fieldnotes home"><span class="mark">F</span> fieldnotes</a>
+      <span class="service-state"><span class="service-dot"></span> Generator ready</span>
+    </header>
+    <main class="workspace">
+      <section class="composer" aria-labelledby="page-title">
+        <p class="eyebrow">RESEARCH-LED WRITING</p>
+        <h1 id="page-title">What should we write about?</h1>
+        <p class="intro">Set a direction. Your research and writing agents will take it from there.</p>
+        <form id="generate-form">
+          <label for="topic">Topic</label>
+          <textarea id="topic" name="topic" rows="2" minlength="3" maxlength="200" placeholder="e.g. How community solar is changing local energy" required></textarea>
+          <label for="requirements">A little more direction <span class="optional">OPTIONAL</span></label>
+          <textarea id="requirements" name="user_requirements" rows="3" maxlength="5000" placeholder="Angles to cover, sources to prioritize, or points to avoid"></textarea>
+          <div class="field-grid">
+            <div>
+              <label for="audience">For</label>
+              <input id="audience" name="target_audience" value="general" maxlength="200">
+            </div>
+            <div>
+              <label for="tone">Tone</label>
+              <select id="tone" name="tone">
+                <option>professional</option><option>casual</option><option>technical</option><option>friendly</option>
+              </select>
+            </div>
+            <div>
+              <label for="word-count">Length</label>
+              <div class="number-field"><input id="word-count" name="word_count" type="number" min="100" max="5000" step="100" value="700"><span>words</span></div>
+            </div>
+          </div>
+          <button id="submit-button" type="submit"><span>Generate article</span><span aria-hidden="true">&#8594;</span></button>
+          <p id="form-error" class="form-error" role="alert" hidden></p>
+        </form>
+      </section>
+      <section class="result" aria-live="polite" aria-busy="false">
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon" aria-hidden="true"><span></span><span></span><span></span></div>
+          <h2>Your next article starts here.</h2>
+          <p>Generated writing will appear in this space, ready to review.</p>
+        </div>
+        <article id="article" hidden>
+          <div class="article-meta"><span id="article-topic"></span><button id="copy-button" class="icon-button" type="button" title="Copy article" aria-label="Copy article"><span aria-hidden="true">&#9634;</span></button></div>
+          <h2 id="article-title"></h2>
+          <div id="article-stats" class="article-stats"></div>
+          <div id="article-content" class="article-content"></div>
+          <section id="source-section" class="sources" hidden><h3>Research sources</h3><ol id="source-list"></ol></section>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
