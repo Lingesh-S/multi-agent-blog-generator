@@ -46,7 +46,7 @@ The response includes the article title and content, metadata, research sources,
 
 ## Configuration
 
-Settings are loaded from environment variables or a local `.env` file. The table below lists common options; the remaining settings are defined in `src/config/settings.py`.
+Settings are loaded from environment variables or a local `.env` file. Copy `.env.example` to `.env` to start from a template with every option. The table below lists common options; the remaining settings are defined in `src/config/settings.py`.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
@@ -84,6 +84,8 @@ The dashboard is available at `http://localhost:8000`. The compose setup starts 
 pip install -r requirements-dev.txt
 pytest
 ```
+
+`pytest.ini` runs the suite with coverage and writes an HTML report to `htmlcov/`. Tests that need a live LLM or internet access are marked `requires_llm` and `requires_search`; skip them with `pytest -m "not requires_llm and not requires_search"`.
 
 Core modules live under `src/agents`, `src/tools`, `src/api`, `src/cli`, and `src/state`. See [docs/architecture.md](docs/architecture.md) for the workflow and [docs/QUICKSTART.md](docs/QUICKSTART.md) for API and deployment examples.
 
