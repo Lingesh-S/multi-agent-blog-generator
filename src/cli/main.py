@@ -161,7 +161,7 @@ def batch(config_file):
     console.print(f"[yellow]Loading batch configuration from {config_file}...[/yellow]")
     
     # Load config
-    with open(config_file, "r") as f:
+    with open(config_file, "r", encoding="utf-8") as f:
         config = json.load(f)
     
     topics = config.get("topics", [])
@@ -252,7 +252,7 @@ def _save_output(result: dict, filepath: str, format: str):
     
     Path(filepath).parent.mkdir(parents=True, exist_ok=True)
     
-    with open(filepath, "w") as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         if format == "markdown":
             f.write(f"# {blog_title}\n\n{blog_post}\n")
         elif format == "json":
