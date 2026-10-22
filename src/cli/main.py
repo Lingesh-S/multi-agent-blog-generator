@@ -212,7 +212,7 @@ def _display_results(result: dict, format: str, output_path: str = None):
     if format == "markdown":
         content = f"# {blog_title}\n\n{blog_post}\n\n---\n"
         content += f"*Word Count: {metadata.get('word_count', 0)}*\n"
-        if quality_score:
+        if quality_score is not None:
             content += f"*Quality Score: {quality_score:.2f}*\n"
     
     elif format == "json":
@@ -239,7 +239,7 @@ def _display_results(result: dict, format: str, output_path: str = None):
             f"[bold]Word Count:[/bold] {metadata.get('word_count', 0)}\n"
             f"[bold]Paragraphs:[/bold] {metadata.get('paragraph_count', 0)}\n"
             f"[bold]Reading Time:[/bold] {metadata.get('estimated_reading_time', 0)} min"
-            + (f"\n[bold]Quality Score:[/bold] {quality_score:.2f}" if quality_score else ""),
+            + (f"\n[bold]Quality Score:[/bold] {quality_score:.2f}" if quality_score is not None else ""),
             title="📊 Metadata"
         ))
 
