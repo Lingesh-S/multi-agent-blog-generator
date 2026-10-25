@@ -51,7 +51,7 @@ class DuckDuckGoSearch(SearchProvider):
             List of search result dictionaries
         """
         try:
-            with DDGS() as ddgs:
+            with DDGS(timeout=self.timeout) as ddgs:
                 results = []
                 
                 # Perform text search
