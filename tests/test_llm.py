@@ -97,3 +97,15 @@ def test_generate_reraises_provider_errors(fake_models):
 
     with pytest.raises(ConnectionError):
         llm.generate("hello")
+
+
+def test_ollama_generate_applies_max_tokens(fake_models):
+    llm = LLMProvider({"provider": "ollama", "model": "llama3", "max_tokens": 400})
+
+    llm.generate("hello")
+    llm.generate("hello again", temperature=0.1, max_tokens=80)
+
+    first, second = fake_models[0].calls
+    assert first["num_predict"] == 400
+    assert second["num_predict"] == 80
+    assert second["temperature"] == 0.1
