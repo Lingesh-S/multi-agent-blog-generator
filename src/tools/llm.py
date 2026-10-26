@@ -58,9 +58,10 @@ class OllamaProvider(BaseLLMProvider):
             Generated text
         """
         try:
-            # Update temperature for this call
+            # Update parameters for this call (Ollama calls max tokens num_predict)
             self.llm.temperature = temperature
-            
+            self.llm.num_predict = max_tokens
+
             response = self.llm.invoke(prompt)
             return response.content
             
