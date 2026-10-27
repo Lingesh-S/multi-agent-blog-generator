@@ -172,8 +172,9 @@ Write your review:"""
         
         # Word count accuracy (20% of score)
         actual_words = len(blog_post.split())
-        word_count_ratio = min(actual_words / word_count_target, word_count_target / actual_words)
-        score += 0.2 * word_count_ratio
+        if actual_words > 0 and word_count_target > 0:
+            word_count_ratio = min(actual_words / word_count_target, word_count_target / actual_words)
+            score += 0.2 * word_count_ratio
         
         # Content length check (20% of score)
         if actual_words >= 200:

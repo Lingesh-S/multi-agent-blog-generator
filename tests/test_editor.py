@@ -68,6 +68,22 @@ def test_editor_respects_configured_threshold(fake_llm):
     assert result["needs_revision"] is True
 
 
+def test_editor_handles_whitespace_only_post(fake_llm):
+    state = {"topic": "AI", "blog_post": "  \n\n  ", "word_count": 500}
+
+    result = EditorAgent()(state)
+
+    assert result["agent_status"]["Editor"] == AgentStatus.COMPLETED
+    assert result["quality_score"] < 0.7
+    assert result["needs_revision"] is True
+
+
+def test_quality_score_handles_zero_word_target(fake_llm):
+    score = EditorAgent()._extract_quality_score("good", make_post(), 0)
+
+    assert 0.0 <= score <= 1.0
+
+
 def test_simple_editor_accepts_well_formed_post():
     state = {"blog_post": make_post(), "word_count": 300}
 
