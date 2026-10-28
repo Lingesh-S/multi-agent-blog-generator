@@ -159,9 +159,10 @@ class ResearcherAgent(BaseAgent):
         Returns:
             List of formatted information strings
         """
+        fallback = ["No research data available. Please provide information about the topic."]
         if not results:
-            return ["No research data available. Please provide information about the topic."]
-        
+            return fallback
+
         extracted = []
         
         for idx, result in enumerate(results):
@@ -172,8 +173,9 @@ class ResearcherAgent(BaseAgent):
                 # Format with source attribution
                 info = f"[Source {idx + 1}] {title}\n{snippet}"
                 extracted.append(info)
-        
-        return extracted
+
+        # Results without snippets give the writer nothing to work with
+        return extracted or fallback
     
     def _format_sources(self, results: List[Dict[str, Any]]) -> List[Dict[str, str]]:
         """

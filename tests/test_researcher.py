@@ -113,3 +113,13 @@ def test_assess_quality_thresholds(count, words, expected):
     quality = agent._assess_quality(agent._extract_information(results), results)
 
     assert quality == expected
+
+
+def test_researcher_falls_back_when_results_have_no_snippets():
+    results = [{"title": "Empty", "link": "https://example.com", "snippet": ""}]
+    agent = make_agent([results])
+
+    result = agent({"topic": "AI"})
+
+    assert result["research_data"][0].startswith("No research data available")
+    assert result["research_sources"][0]["url"] == "https://example.com"
