@@ -121,3 +121,14 @@ def test_revision_agent_revises_with_feedback(monkeypatch):
     prompt, _ = llm.prompts[0]
     assert "draft" in prompt
     assert "add examples" in prompt
+
+
+def test_writer_strips_blank_lines_around_draft(monkeypatch):
+    post = "\n\nOpening paragraph about agents.\n\nSecond paragraph.\n"
+    agent, llm = make_agent([post, "A Title That Is Long Enough"], monkeypatch=monkeypatch)
+
+    result = agent({"topic": "AI", "research_data": ["fact"]})
+
+    assert result["blog_post"] == "Opening paragraph about agents.\n\nSecond paragraph."
+    title_prompt, _ = llm.prompts[1]
+    assert "First paragraph of the blog:\nOpening paragraph about agents.\n" in title_prompt
