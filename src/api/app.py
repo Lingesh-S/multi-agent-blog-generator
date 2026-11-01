@@ -1,8 +1,8 @@
 """FastAPI application entry point."""
 
+from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from pathlib import Path
-from collections import defaultdict, deque
 from threading import Lock
 from time import monotonic
 

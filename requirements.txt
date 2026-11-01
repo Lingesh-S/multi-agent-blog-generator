@@ -6,7 +6,7 @@ langchain-ollama>=0.0.1
 langchain-openai>=0.0.5
 
 # Search Tools
-duckduckgo-search>=4.0.0
+ddgs>=9.0.0
 
 # API Framework
 fastapi>=0.109.0
