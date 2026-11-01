@@ -1,5 +1,7 @@
 """Tests for the LLM provider wrappers."""
 
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 
 import pytest
@@ -9,6 +11,7 @@ from src.tools.llm import LLMProvider, OllamaProvider, OpenAIProvider
 
 class FakeChatModel:
     instances = []
+    barrier = None
 
     def __init__(self, **kwargs):
         self.kwargs = kwargs
@@ -16,15 +19,25 @@ class FakeChatModel:
         self.calls = []
         FakeChatModel.instances.append(self)
 
+    def model_copy(self, update=None):
+        # Like pydantic's model_copy: a shallow copy, so call logs stay shared
+        copy = object.__new__(FakeChatModel)
+        copy.__dict__.update(self.__dict__)
+        copy.__dict__.update(update or {})
+        return copy
+
     def invoke(self, prompt):
+        if FakeChatModel.barrier is not None:
+            FakeChatModel.barrier.wait(timeout=5)
         self.prompts.append(prompt)
-        self.calls.append(dict(vars(self)))
+        self.calls.append({**vars(self), "prompt": prompt})
         return SimpleNamespace(content=f"reply to {prompt}")
 
 
 @pytest.fixture
 def fake_models(monkeypatch):
     FakeChatModel.instances = []
+    FakeChatModel.barrier = None
     monkeypatch.setattr("langchain_ollama.ChatOllama", FakeChatModel)
     monkeypatch.setattr("langchain_openai.ChatOpenAI", FakeChatModel)
     return FakeChatModel.instances
@@ -109,3 +122,26 @@ def test_ollama_generate_applies_max_tokens(fake_models):
     assert first["num_predict"] == 400
     assert second["num_predict"] == 80
     assert second["temperature"] == 0.1
+
+
+@pytest.mark.parametrize(
+    "config, tokens_field",
+    [
+        ({"provider": "ollama", "model": "llama3"}, "num_predict"),
+        ({"provider": "openai", "model": "gpt-4o", "api_key": "sk-test"}, "max_tokens"),
+    ],
+)
+def test_concurrent_calls_keep_their_own_settings(fake_models, config, tokens_field):
+    llm = LLMProvider(config)
+    requests = [("cold", 0.1, 100), ("warm", 0.9, 900)]
+    # Both calls wait for each other inside invoke, so they overlap
+    FakeChatModel.barrier = threading.Barrier(len(requests))
+
+    with ThreadPoolExecutor(max_workers=len(requests)) as pool:
+        list(pool.map(lambda r: llm.generate(r[0], temperature=r[1], max_tokens=r[2]), requests))
+
+    calls = {call["prompt"]: call for call in fake_models[0].calls}
+    for prompt, temperature, max_tokens in requests:
+        assert calls[prompt]["temperature"] == temperature
+        assert calls[prompt][tokens_field] == max_tokens
+    assert "temperature" not in vars(fake_models[0])

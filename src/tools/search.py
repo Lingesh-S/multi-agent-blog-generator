@@ -12,10 +12,15 @@ from time import monotonic
 from typing import Any
 
 try:
-    from duckduckgo_search import DDGS
+    from ddgs import DDGS
     DUCKDUCKGO_AVAILABLE = True
 except ImportError:
-    DUCKDUCKGO_AVAILABLE = False
+    # duckduckgo-search is the old name of the ddgs package
+    try:
+        from duckduckgo_search import DDGS
+        DUCKDUCKGO_AVAILABLE = True
+    except ImportError:
+        DUCKDUCKGO_AVAILABLE = False
 
 
 class SearchProvider(ABC):
@@ -33,8 +38,8 @@ class DuckDuckGoSearch(SearchProvider):
     def __init__(self, timeout: int = 10):
         if not DUCKDUCKGO_AVAILABLE:
             raise ImportError(
-                "duckduckgo-search not installed. "
-                "Install with: pip install duckduckgo-search"
+                "ddgs not installed. "
+                "Install with: pip install ddgs"
             )
         self.timeout = timeout
         self.logger = logging.getLogger("search.duckduckgo")

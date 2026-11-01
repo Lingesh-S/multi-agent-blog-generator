@@ -115,7 +115,7 @@ def check():
     deps = [
         ("langgraph", "LangGraph"),
         ("langchain", "LangChain"),
-        ("duckduckgo_search", "DuckDuckGo Search"),
+        ("ddgs", "DuckDuckGo Search (ddgs)"),
         ("fastapi", "FastAPI"),
         ("rich", "Rich"),
     ]

@@ -57,11 +57,13 @@ class OllamaProvider(BaseLLMProvider):
             Generated text
         """
         try:
-            # Update parameters for this call (Ollama calls max tokens num_predict)
-            self.llm.temperature = temperature
-            self.llm.num_predict = max_tokens
+            # Per-call copy so concurrent calls don't overwrite each other's
+            # settings (Ollama calls max tokens num_predict)
+            llm = self.llm.model_copy(
+                update={"temperature": temperature, "num_predict": max_tokens}
+            )
 
-            response = self.llm.invoke(prompt)
+            response = llm.invoke(prompt)
             return response.content
 
         except Exception as e:
@@ -101,11 +103,12 @@ class OpenAIProvider(BaseLLMProvider):
             Generated text
         """
         try:
-            # Update parameters for this call
-            self.llm.temperature = temperature
-            self.llm.max_tokens = max_tokens
+            # Per-call copy so concurrent calls don't overwrite each other's settings
+            llm = self.llm.model_copy(
+                update={"temperature": temperature, "max_tokens": max_tokens}
+            )
 
-            response = self.llm.invoke(prompt)
+            response = llm.invoke(prompt)
             return response.content
 
         except Exception as e:
