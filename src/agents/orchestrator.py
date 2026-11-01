@@ -255,8 +255,8 @@ class IterativeOrchestrator(MultiAgentOrchestrator):
         """
         draft_iterations = state.get("draft_iterations", 0)
         needs_revision = state.get("needs_revision", False)
-        quality_score = state.get("quality_score", 1.0)
-        
+        quality_score = state.get("quality_score")
+
         # Check iteration limit
         if draft_iterations >= self.max_iterations:
             self.logger.info(f"Max iterations ({self.max_iterations}) reached")
@@ -267,6 +267,11 @@ class IterativeOrchestrator(MultiAgentOrchestrator):
             self.logger.info("No revision needed")
             return "end"
         
+        # Without a score there is nothing to revise against
+        if quality_score is None:
+            self.logger.warning("Editor returned no quality score; ending iteration")
+            return "end"
+
         # Check quality threshold
         if quality_score >= 0.8:
             self.logger.info(f"Quality threshold met: {quality_score:.2f}")
