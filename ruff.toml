@@ -1,0 +1,6 @@
+line-length = 120
+target-version = "py310"
+extend-exclude = ["venv", "htmlcov"]
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B"]

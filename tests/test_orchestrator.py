@@ -1,6 +1,5 @@
 """Tests for the workflow orchestrators with stubbed agents."""
 
-import logging
 from types import SimpleNamespace
 
 import pytest

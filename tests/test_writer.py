@@ -1,6 +1,5 @@
 """Tests for the writer agents."""
 
-import pytest
 
 from src.agents import writer
 from src.agents.writer import WriterAgent, WriterAgentWithRevision
