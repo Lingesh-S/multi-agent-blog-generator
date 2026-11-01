@@ -75,7 +75,7 @@ class WriterAgent(BaseAgent):
             )
         
         # Generate blog post
-        blog_post = self.llm.generate(prompt)
+        blog_post = self.llm.generate(prompt).strip()
         
         # Generate title
         title = self._generate_title(topic, blog_post)
