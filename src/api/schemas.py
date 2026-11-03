@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class GenerateRequest(BaseModel):
     """Options accepted by the blog generation endpoint."""
 
-    model_config = {"extra": "forbid"}
+    model_config = {"extra": "forbid", "str_strip_whitespace": True}
 
     topic: str = Field(min_length=3, max_length=200)
     user_requirements: Optional[str] = Field(default=None, max_length=5000)
