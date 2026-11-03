@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class GenerateRequest(BaseModel):
@@ -15,6 +15,12 @@ class GenerateRequest(BaseModel):
     target_audience: str = Field(default="general", min_length=1, max_length=200)
     tone: str = Field(default="professional", min_length=1, max_length=100)
     word_count: int = Field(default=500, ge=100, le=5000)
+
+    @field_validator("user_requirements")
+    @classmethod
+    def blank_requirements_to_none(cls, value: Optional[str]) -> Optional[str]:
+        """The dashboard sends an empty string when no requirements are given."""
+        return value or None
 
 
 class GenerateResponse(BaseModel):
