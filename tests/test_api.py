@@ -67,3 +67,31 @@ def test_workflow_errors_map_to_bad_gateway():
         )
 
     assert error.value.status_code == 502
+
+
+def test_generate_request_strips_whitespace():
+    request = GenerateRequest(
+        topic="  Community solar  ",
+        target_audience=" homeowners ",
+        tone=" friendly\n",
+    )
+
+    assert request.topic == "Community solar"
+    assert request.target_audience == "homeowners"
+    assert request.tone == "friendly"
+
+
+def test_generate_request_rejects_blank_fields():
+    with pytest.raises(ValidationError):
+        GenerateRequest(topic="     ")
+    with pytest.raises(ValidationError):
+        GenerateRequest(topic="Community solar", tone="   ")
+
+
+def test_blank_requirements_are_treated_as_missing():
+    assert GenerateRequest(topic="Community solar", user_requirements="").user_requirements is None
+    assert GenerateRequest(topic="Community solar", user_requirements="  \n").user_requirements is None
+    assert (
+        GenerateRequest(topic="Community solar", user_requirements=" Add examples ").user_requirements
+        == "Add examples"
+    )
