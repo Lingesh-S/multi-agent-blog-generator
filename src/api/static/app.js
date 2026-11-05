@@ -91,8 +91,12 @@ function renderArticle(data) {
 document.querySelector("#copy-button").addEventListener("click", async () => {
   const title = document.querySelector("#article-title").textContent;
   const content = [...document.querySelectorAll("#article-content p")].map((paragraph) => paragraph.textContent).join("\n\n");
-  await navigator.clipboard.writeText(`# ${title}\n\n${content}`);
   const buttonLabel = document.querySelector("#copy-button");
-  buttonLabel.title = "Copied";
+  try {
+    await navigator.clipboard.writeText(`# ${title}\n\n${content}`);
+    buttonLabel.title = "Copied";
+  } catch {
+    buttonLabel.title = "Copy failed";
+  }
   window.setTimeout(() => { buttonLabel.title = "Copy article"; }, 1500);
 });
