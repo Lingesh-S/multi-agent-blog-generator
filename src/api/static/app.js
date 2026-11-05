@@ -20,8 +20,9 @@ form.addEventListener("submit", async (event) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.detail || "Generation failed. Please try again.");
+    const data = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(errorDetail(data));
+    if (!data) throw new Error("The server returned an unreadable response.");
     renderArticle(data);
   } catch (error) {
     errorMessage.textContent = error.message;
@@ -32,6 +33,18 @@ form.addEventListener("submit", async (event) => {
     button.querySelector("span:first-child").textContent = "Generate article";
   }
 });
+
+function errorDetail(data) {
+  const detail = data?.detail;
+  if (typeof detail === "string" && detail) return detail;
+  if (Array.isArray(detail) && detail.length) {
+    return detail.map((issue) => {
+      const field = (issue.loc || []).filter((part) => part !== "body").join(".");
+      return field ? `${field}: ${issue.msg}` : issue.msg;
+    }).join("; ");
+  }
+  return "Generation failed. Please try again.";
+}
 
 function renderArticle(data) {
   document.querySelector("#empty-state").hidden = true;
