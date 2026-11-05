@@ -91,6 +91,7 @@ class Settings(BaseSettings):
     @classmethod
     def validate_llm_provider(cls, v):
         allowed = ["ollama", "openai"]
+        v = v.strip().lower()
         if v not in allowed:
             raise ValueError(f"LLM provider must be one of {allowed}")
         return v
@@ -99,6 +100,7 @@ class Settings(BaseSettings):
     @classmethod
     def validate_search_provider(cls, v):
         allowed = ["duckduckgo", "serper", "tavily"]
+        v = v.strip().lower()
         if v not in allowed:
             raise ValueError(f"Search provider must be one of {allowed}")
         return v
@@ -107,6 +109,7 @@ class Settings(BaseSettings):
     @classmethod
     def validate_environment(cls, v):
         allowed = ["development", "staging", "production"]
+        v = v.strip().lower()
         if v not in allowed:
             raise ValueError(f"Environment must be one of {allowed}")
         return v

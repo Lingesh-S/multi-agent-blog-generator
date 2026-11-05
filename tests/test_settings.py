@@ -92,3 +92,13 @@ def test_config_helpers_expose_provider_settings(use_settings):
     assert llm_config["api_key"] == "key"
     assert search_config["provider"] == "serper"
     assert search_config["max_results"] == 3
+
+
+def test_choices_ignore_case_and_whitespace():
+    configured = make_settings(
+        llm_provider=" OpenAI ", search_provider="DuckDuckGo", environment="Production"
+    )
+
+    assert configured.llm_provider == "openai"
+    assert configured.search_provider == "duckduckgo"
+    assert configured.environment == "production"
