@@ -46,3 +46,24 @@ def test_search_cache_evicts_least_recently_used_entry():
     tool.search("first")
 
     assert calls == ["first", "second", "first"]
+
+
+def test_search_cache_ignores_case_and_extra_whitespace():
+    tool = SearchTool(
+        provider="serper",
+        api_key="test-key",
+        cache_enabled=True,
+        cache_ttl=60,
+        cache_max_size=2,
+    )
+    calls = []
+
+    def search(query, max_results):
+        calls.append(query)
+        return [{"title": query}]
+
+    tool.provider.search = search
+    tool.search("Community Solar")
+    tool.search("  community   solar ")
+
+    assert calls == ["Community Solar"]
