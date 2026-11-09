@@ -4,11 +4,11 @@ Configuration Management
 Handles environment variables and application settings.
 """
 
-from typing import Optional, List
+import os
+from functools import lru_cache
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from functools import lru_cache
-import os
 
 
 class Settings(BaseSettings):
@@ -19,74 +19,74 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=False,
     )
-    
+
     # LLM Configuration
     llm_provider: str = Field(default="ollama", description="LLM provider to use")
     llm_model: str = Field(default="llama3", description="Model name")
     llm_temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     llm_max_tokens: int = Field(default=2000, gt=0)
-    
+
     # OpenAI Configuration
-    openai_api_key: Optional[str] = Field(default=None, description="OpenAI API key")
-    
+    openai_api_key: str | None = Field(default=None, description="OpenAI API key")
+
     # Ollama Configuration
     ollama_base_url: str = Field(default="http://localhost:11434")
-    
+
     # Search Configuration
     search_provider: str = Field(default="duckduckgo")
     search_max_results: int = Field(default=5, ge=1, le=20)
     search_timeout: int = Field(default=10, ge=1)
-    
+
     # Optional Search APIs
-    serper_api_key: Optional[str] = None
-    tavily_api_key: Optional[str] = None
-    
+    serper_api_key: str | None = None
+    tavily_api_key: str | None = None
+
     # Application Configuration
     app_name: str = Field(default="Multi-Agent Blog Generator")
     app_version: str = Field(default="1.0.0")
     environment: str = Field(default="development")
-    
+
     # Logging Configuration
     log_level: str = Field(default="INFO")
     log_file: str = Field(default="logs/app.log")
     log_format: str = Field(default="json")
-    
+
     # API Configuration
     api_host: str = Field(default="0.0.0.0")
     api_port: int = Field(default=8000, ge=1024, le=65535)
     api_reload: bool = Field(default=True)
     api_workers: int = Field(default=1, ge=1)
-    
+
     # CORS Configuration
-    cors_origins: List[str] = Field(default=["http://localhost:3000"])
+    cors_origins: list[str] = Field(default=["http://localhost:3000"])
     cors_allow_credentials: bool = Field(default=True)
-    
+
     # Rate Limiting
     rate_limit_enabled: bool = Field(default=True)
     rate_limit_requests: int = Field(default=100, ge=1)
     rate_limit_period: int = Field(default=3600, ge=1)
-    
+
     # Agent Configuration
     researcher_retries: int = Field(default=3, ge=1)
     writer_min_words: int = Field(default=300, ge=100)
     editor_enabled: bool = Field(default=True)
-    
+
     # Cache Configuration
     cache_enabled: bool = Field(default=True)
     cache_ttl: int = Field(default=3600, ge=0)
     cache_max_size: int = Field(default=1000, ge=0)
-    
+
     # Performance
     max_concurrent_agents: int = Field(default=5, ge=1)
     agent_timeout: int = Field(default=300, ge=30)
-    
+
     # Database (optional)
-    database_url: Optional[str] = Field(default="sqlite:///./data/app.db")
-    
+    database_url: str | None = Field(default="sqlite:///./data/app.db")
+
     # Monitoring (optional)
-    sentry_dsn: Optional[str] = None
+    sentry_dsn: str | None = None
     prometheus_enabled: bool = Field(default=False)
-    
+
     @field_validator("llm_provider")
     @classmethod
     def validate_llm_provider(cls, v):
@@ -94,7 +94,7 @@ class Settings(BaseSettings):
         if v not in allowed:
             raise ValueError(f"LLM provider must be one of {allowed}")
         return v
-    
+
     @field_validator("search_provider")
     @classmethod
     def validate_search_provider(cls, v):
@@ -102,7 +102,7 @@ class Settings(BaseSettings):
         if v not in allowed:
             raise ValueError(f"Search provider must be one of {allowed}")
         return v
-    
+
     @field_validator("environment")
     @classmethod
     def validate_environment(cls, v):
@@ -110,7 +110,7 @@ class Settings(BaseSettings):
         if v not in allowed:
             raise ValueError(f"Environment must be one of {allowed}")
         return v
-    
+
     @field_validator("log_level")
     @classmethod
     def validate_log_level(cls, v):
@@ -119,23 +119,23 @@ class Settings(BaseSettings):
         if v_upper not in allowed:
             raise ValueError(f"Log level must be one of {allowed}")
         return v_upper
-    
-    def validate_api_keys(self) -> List[str]:
+
+    def validate_api_keys(self) -> list[str]:
         """Validate that required API keys are present based on configuration"""
         missing = []
-        
+
         if self.llm_provider == "openai" and not self.openai_api_key:
             missing.append("OPENAI_API_KEY")
-        
+
         if self.search_provider == "serper" and not self.serper_api_key:
             missing.append("SERPER_API_KEY")
-            
+
         if self.search_provider == "tavily" and not self.tavily_api_key:
             missing.append("TAVILY_API_KEY")
-        
+
         return missing
-    
-@lru_cache()
+
+@lru_cache
 def get_settings() -> Settings:
     """
     Get cached settings instance.
@@ -144,28 +144,28 @@ def get_settings() -> Settings:
     return Settings()
 
 
-def validate_configuration() -> tuple[bool, Optional[str]]:
+def validate_configuration() -> tuple[bool, str | None]:
     """
     Validate the complete configuration.
-    
+
     Returns:
         Tuple of (is_valid, error_message)
     """
     try:
         settings = get_settings()
-        
+
         # Check for missing API keys
         missing_keys = settings.validate_api_keys()
         if missing_keys:
             return False, f"Missing required API keys: {', '.join(missing_keys)}"
-        
+
         # Validate log directory exists
         log_dir = os.path.dirname(settings.log_file)
         if log_dir and not os.path.exists(log_dir):
             os.makedirs(log_dir, exist_ok=True)
-        
+
         return True, None
-        
+
     except Exception as e:
         return False, f"Configuration error: {str(e)}"
 

@@ -7,7 +7,6 @@ from click.testing import CliRunner
 
 from src.cli import main as cli_main
 
-
 RESULT = {
     "blog_title": "Café culture “explained”",
     "blog_post": "First paragraph.\n\nSecond paragraph with an emoji ☕.",
@@ -62,7 +61,8 @@ def test_generate_saves_json(orchestrator, tmp_path):
 
 
 def test_generate_stops_on_invalid_configuration(orchestrator, monkeypatch):
-    monkeypatch.setattr(cli_main, "validate_configuration", lambda: (False, "Missing required API keys: OPENAI_API_KEY"))
+    error = "Missing required API keys: OPENAI_API_KEY"
+    monkeypatch.setattr(cli_main, "validate_configuration", lambda: (False, error))
 
     result = CliRunner().invoke(cli_main.cli, ["generate", "--topic", "Coffee"])
 

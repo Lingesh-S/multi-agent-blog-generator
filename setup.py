@@ -2,8 +2,9 @@
 Setup script for Multi-Agent Blog Generator
 """
 
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import find_packages, setup
 
 # Read README
 readme_file = Path(__file__).parent / "README.md"
