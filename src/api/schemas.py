@@ -18,7 +18,7 @@ class GenerateRequest(BaseModel):
 
     @field_validator("user_requirements")
     @classmethod
-    def blank_requirements_to_none(cls, value: Optional[str]) -> Optional[str]:
+    def blank_requirements_to_none(cls, value: str | None) -> str | None:
         """The dashboard sends an empty string when no requirements are given."""
         return value or None
 
