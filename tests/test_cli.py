@@ -115,3 +115,48 @@ def test_batch_with_no_topics(orchestrator, tmp_path):
     assert result.exit_code == 0
     assert "No topics found" in result.output
     assert orchestrator.calls == []
+
+
+def test_batch_stops_on_invalid_configuration(orchestrator, monkeypatch, tmp_path):
+    config = tmp_path / "batch.json"
+    config.write_text('{"topics": [{"topic": "Coffee"}]}', encoding="utf-8")
+    error = "Missing required API keys: OPENAI_API_KEY"
+    monkeypatch.setattr(cli_main, "validate_configuration", lambda: (False, error))
+
+    result = CliRunner().invoke(cli_main.cli, ["batch", str(config)])
+
+    assert result.exit_code != 0
+    assert "Missing required API keys" in result.output
+    assert orchestrator.calls == []
+
+
+@pytest.mark.parametrize(
+    "content",
+    ['{"topics": [', '["Coffee"]', '{"topics": "Coffee"}'],
+)
+def test_batch_rejects_malformed_config(orchestrator, tmp_path, content):
+    config = tmp_path / "batch.json"
+    config.write_text(content, encoding="utf-8")
+
+    result = CliRunner().invoke(cli_main.cli, ["batch", str(config)])
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert not isinstance(result.exception, (ValueError, AttributeError, TypeError))
+    assert orchestrator.calls == []
+
+
+def test_batch_skips_entries_without_topic(orchestrator, tmp_path):
+    config = tmp_path / "batch.json"
+    output = tmp_path / "coffee.md"
+    config.write_text(
+        json.dumps({"topics": [{"audience": "baristas"}, "Tea", {"topic": "Coffee", "output": str(output)}]}),
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(cli_main.cli, ["batch", str(config)])
+
+    assert result.exit_code == 0, result.output
+    assert result.output.count('missing a "topic"') == 2
+    assert [call["topic"] for call in orchestrator.calls] == ["Coffee"]
+    assert output.exists()
