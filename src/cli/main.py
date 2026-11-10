@@ -161,10 +161,15 @@ def batch(config_file):
     console.print(f"[yellow]Loading batch configuration from {config_file}...[/yellow]")
 
     # Load config
-    with open(config_file, encoding="utf-8") as f:
-        config = json.load(f)
+    try:
+        with open(config_file, encoding="utf-8") as f:
+            config = json.load(f)
+    except json.JSONDecodeError as e:
+        raise click.ClickException(f"Invalid JSON in {config_file}: {e}") from e
 
-    topics = config.get("topics", [])
+    topics = config.get("topics", []) if isinstance(config, dict) else None
+    if not isinstance(topics, list):
+        raise click.ClickException('Batch config must be a JSON object with a "topics" list')
 
     if not topics:
         console.print("[red]No topics found in configuration[/red]")
@@ -183,6 +188,10 @@ def batch(config_file):
     # Process each topic
     for idx, topic_config in enumerate(topics, 1):
         console.print(f"\n[bold cyan]Processing {idx}/{len(topics)}[/bold cyan]")
+
+        if not isinstance(topic_config, dict) or not topic_config.get("topic"):
+            console.print(f'[red]✗ Skipping entry {idx}: missing a "topic"[/red]')
+            continue
 
         try:
             result = orchestrator.run(
