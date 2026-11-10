@@ -115,3 +115,16 @@ def test_batch_with_no_topics(orchestrator, tmp_path):
     assert result.exit_code == 0
     assert "No topics found" in result.output
     assert orchestrator.calls == []
+
+
+def test_batch_stops_on_invalid_configuration(orchestrator, monkeypatch, tmp_path):
+    config = tmp_path / "batch.json"
+    config.write_text('{"topics": [{"topic": "Coffee"}]}', encoding="utf-8")
+    error = "Missing required API keys: OPENAI_API_KEY"
+    monkeypatch.setattr(cli_main, "validate_configuration", lambda: (False, error))
+
+    result = CliRunner().invoke(cli_main.cli, ["batch", str(config)])
+
+    assert result.exit_code != 0
+    assert "Missing required API keys" in result.output
+    assert orchestrator.calls == []

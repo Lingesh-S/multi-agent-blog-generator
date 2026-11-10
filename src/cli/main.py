@@ -172,6 +172,11 @@ def batch(config_file):
 
     console.print(f"[green]Found {len(topics)} topics to process[/green]\n")
 
+    is_valid, error = validate_configuration()
+    if not is_valid:
+        console.print(f"[red]Configuration error: {error}[/red]")
+        raise click.ClickException(error)
+
     # Initialize orchestrator
     orchestrator = MultiAgentOrchestrator()
 
