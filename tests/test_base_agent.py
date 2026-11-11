@@ -1,5 +1,8 @@
 """Tests for the shared agent base classes."""
 
+from types import SimpleNamespace
+
+from src.agents import base
 from src.agents.base import BaseAgent, ConditionalAgent
 from src.state.schema import AgentStatus
 
@@ -103,3 +106,24 @@ def test_conditional_agent_skips_when_condition_not_met():
 
     assert agent.calls == 1
     assert executed["blog_post"] == "revised"
+
+
+def test_execution_time_accumulates_across_runs(monkeypatch):
+    clock = iter([10.0, 12.0, 20.0, 23.0])
+    monkeypatch.setattr(base, "time", SimpleNamespace(time=lambda: next(clock)))
+    agent = EchoAgent()
+
+    first = agent({"topic": "solar"})
+    second = agent({"topic": "solar", "execution_time": first["execution_time"]})
+
+    assert first["execution_time"]["Echo"] == 2.0
+    assert second["execution_time"]["Echo"] == 5.0
+
+
+def test_execution_time_accumulates_after_failure(monkeypatch):
+    clock = iter([10.0, 11.0])
+    monkeypatch.setattr(base, "time", SimpleNamespace(time=lambda: next(clock)))
+
+    result = BrokenAgent()({"topic": "solar", "execution_time": {"Broken": 4.0, "Researcher": 1.5}})
+
+    assert result["execution_time"] == {"Broken": 5.0, "Researcher": 1.5}

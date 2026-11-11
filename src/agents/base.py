@@ -76,10 +76,7 @@ class BaseAgent(ABC):
             result.update({
                 "last_modified_by": self.name,
                 "last_modified_at": datetime.now(),
-                "execution_time": {
-                    **state.get("execution_time", {}),
-                    self.name: execution_time
-                },
+                "execution_time": self._record_time(state, execution_time),
                 "agent_status": {
                     **state.get("agent_status", {}),
                     self.name: AgentStatus.COMPLETED
@@ -114,10 +111,7 @@ class BaseAgent(ABC):
                     self.name: AgentStatus.FAILED
                 },
                 "error_log": state.get("error_log", []) + [error_entry],
-                "execution_time": {
-                    **state.get("execution_time", {}),
-                    self.name: execution_time
-                }
+                "execution_time": self._record_time(state, execution_time)
             }
 
     def _update_status(self, state: AgentState, status: AgentStatus) -> None:
@@ -125,6 +119,11 @@ class BaseAgent(ABC):
         if "agent_status" not in state:
             state["agent_status"] = {}
         state["agent_status"][self.name] = status
+
+    def _record_time(self, state: AgentState, elapsed: float) -> dict[str, float]:
+        """Add this run to the agent's total so repeated runs are not lost"""
+        times = state.get("execution_time") or {}
+        return {**times, self.name: times.get(self.name, 0.0) + elapsed}
 
     def validate_input(self, state: AgentState, required_fields: list) -> tuple[bool, str | None]:
         """
