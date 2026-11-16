@@ -251,7 +251,7 @@ class SearchTool:
             List of search result dictionaries
         """
         results_limit = max_results or self.max_results
-        cache_key = (query, results_limit)
+        cache_key = (" ".join(query.split()).casefold(), results_limit)
         if self.cache_enabled:
             cached = self._get_cached(cache_key)
             if cached is not None:
