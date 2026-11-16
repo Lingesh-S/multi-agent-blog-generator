@@ -22,7 +22,7 @@ jobs:
             requirements.txt
             requirements-dev.txt
       - name: Install dependencies
-        run: pip install -r requirements.txt pytest pytest-cov ruff
+        run: pip install -r requirements.txt pytest pytest-cov httpx ruff
       - name: Lint
         run: ruff check .
       - name: Test
