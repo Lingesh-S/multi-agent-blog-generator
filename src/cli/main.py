@@ -17,6 +17,10 @@ from src.config import get_settings, validate_configuration
 
 console = Console()
 
+# Same limits the API enforces on generate requests
+MIN_WORD_COUNT = 100
+MAX_WORD_COUNT = 5000
+
 
 @click.group()
 def cli():
@@ -29,7 +33,10 @@ def cli():
 @click.option("--requirements", "-r", help="Additional requirements")
 @click.option("--audience", "-a", default="general", help="Target audience")
 @click.option("--tone", default="professional", help="Writing tone")
-@click.option("--words", "-w", type=int, default=500, help="Target word count")
+@click.option(
+    "--words", "-w", type=click.IntRange(MIN_WORD_COUNT, MAX_WORD_COUNT), default=500,
+    help=f"Target word count ({MIN_WORD_COUNT}-{MAX_WORD_COUNT})",
+)
 @click.option("--output", "-o", type=click.Path(), help="Output file path")
 @click.option("--format", "-f", type=click.Choice(["text", "json", "markdown"]), default="text")
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")

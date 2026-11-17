@@ -160,3 +160,12 @@ def test_batch_skips_entries_without_topic(orchestrator, tmp_path):
     assert result.output.count('missing a "topic"') == 2
     assert [call["topic"] for call in orchestrator.calls] == ["Coffee"]
     assert output.exists()
+
+
+@pytest.mark.parametrize("words", ["50", "99", "5001", "abc"])
+def test_generate_rejects_out_of_range_word_count(orchestrator, words):
+    result = CliRunner().invoke(cli_main.cli, ["generate", "--topic", "Coffee", "--words", words])
+
+    assert result.exit_code == 2
+    assert "--words" in result.output
+    assert orchestrator.calls == []
