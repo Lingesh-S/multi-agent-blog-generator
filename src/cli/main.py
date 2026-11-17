@@ -17,6 +17,10 @@ from src.config import get_settings, validate_configuration
 
 console = Console()
 
+# Same limits the API enforces on generate requests
+MIN_WORD_COUNT = 100
+MAX_WORD_COUNT = 5000
+
 
 @click.group()
 def cli():
@@ -29,7 +33,10 @@ def cli():
 @click.option("--requirements", "-r", help="Additional requirements")
 @click.option("--audience", "-a", default="general", help="Target audience")
 @click.option("--tone", default="professional", help="Writing tone")
-@click.option("--words", "-w", type=int, default=500, help="Target word count")
+@click.option(
+    "--words", "-w", type=click.IntRange(MIN_WORD_COUNT, MAX_WORD_COUNT), default=500,
+    help=f"Target word count ({MIN_WORD_COUNT}-{MAX_WORD_COUNT})",
+)
 @click.option("--output", "-o", type=click.Path(), help="Output file path")
 @click.option("--format", "-f", type=click.Choice(["text", "json", "markdown"]), default="text")
 @click.option("--verbose", "-v", is_flag=True, help="Verbose output")
@@ -193,13 +200,25 @@ def batch(config_file):
             console.print(f'[red]✗ Skipping entry {idx}: missing a "topic"[/red]')
             continue
 
+        word_count = topic_config.get("word_count", 500)
+        if (
+            isinstance(word_count, bool)
+            or not isinstance(word_count, int)
+            or not MIN_WORD_COUNT <= word_count <= MAX_WORD_COUNT
+        ):
+            console.print(
+                f"[red]✗ Skipping entry {idx}: word_count must be an integer "
+                f"between {MIN_WORD_COUNT} and {MAX_WORD_COUNT}[/red]"
+            )
+            continue
+
         try:
             result = orchestrator.run(
                 topic=topic_config["topic"],
                 user_requirements=topic_config.get("requirements"),
                 target_audience=topic_config.get("audience", "general"),
                 tone=topic_config.get("tone", "professional"),
-                word_count=topic_config.get("word_count", 500)
+                word_count=word_count
             )
 
             # Save output
