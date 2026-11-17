@@ -169,3 +169,23 @@ def test_generate_rejects_out_of_range_word_count(orchestrator, words):
     assert result.exit_code == 2
     assert "--words" in result.output
     assert orchestrator.calls == []
+
+
+def test_batch_skips_entries_with_invalid_word_count(orchestrator, tmp_path):
+    config = tmp_path / "batch.json"
+    output = tmp_path / "coffee.md"
+    config.write_text(
+        json.dumps({"topics": [
+            {"topic": "Tea", "word_count": 10},
+            {"topic": "Milk", "word_count": "long"},
+            {"topic": "Coffee", "word_count": 800, "output": str(output)},
+        ]}),
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(cli_main.cli, ["batch", str(config)])
+
+    assert result.exit_code == 0, result.output
+    assert result.output.count("word_count must be") == 2
+    assert [call["topic"] for call in orchestrator.calls] == ["Coffee"]
+    assert orchestrator.calls[0]["word_count"] == 800
