@@ -116,3 +116,43 @@ def test_search_cache_skips_empty_results():
     tool.search("topic")
 
     assert calls == ["topic", "topic"]
+
+
+def make_counting_tool(**cache_options):
+    tool = SearchTool(provider="serper", api_key="test-key", **cache_options)
+    calls = []
+
+    def search(query, max_results):
+        calls.append(query)
+        return [{"title": "Result", "link": "https://example.com", "snippet": "Details"}]
+
+    tool.provider.search = search
+    return tool, calls
+
+
+def test_search_cache_disabled_always_hits_provider():
+    tool, calls = make_counting_tool(cache_enabled=False, cache_ttl=60, cache_max_size=5)
+
+    tool.search("topic")
+    tool.search("topic")
+
+    assert len(calls) == 2
+
+
+def test_search_cache_with_zero_size_stores_nothing():
+    tool, calls = make_counting_tool(cache_enabled=True, cache_ttl=60, cache_max_size=0)
+
+    tool.search("topic")
+    tool.search("topic")
+
+    assert len(calls) == 2
+
+
+def test_search_cache_keys_include_result_limit():
+    tool, calls = make_counting_tool(cache_enabled=True, cache_ttl=60, cache_max_size=5)
+
+    tool.search("topic", max_results=3)
+    tool.search("topic", max_results=4)
+    tool.search("topic", max_results=3)
+
+    assert len(calls) == 2
