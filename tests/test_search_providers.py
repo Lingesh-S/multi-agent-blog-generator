@@ -157,3 +157,25 @@ def test_search_tool_does_not_cache_empty_results():
     tool.search("topic")
 
     assert calls == ["topic", "topic"]
+
+
+def test_search_tool_skips_provider_for_blank_query():
+    tool = SearchTool(provider="serper", api_key="key", cache_enabled=False)
+    calls = []
+    tool.provider.search = lambda query, max_results: calls.append(query) or [{"title": "x"}]
+
+    assert tool.search("") == []
+    assert tool.search("   \n") == []
+    assert calls == []
+
+
+def test_search_tool_zero_or_negative_max_results_returns_nothing():
+    tool = SearchTool(provider="serper", api_key="key", max_results=5, cache_enabled=False)
+    calls = []
+    tool.provider.search = lambda query, max_results: calls.append(max_results) or [{"title": "x"}]
+
+    assert tool.search("topic", max_results=0) == []
+    assert tool.search("topic", max_results=-3) == []
+    assert calls == []
+    assert tool.search("topic") == [{"title": "x"}]
+    assert calls == [5]
