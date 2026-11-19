@@ -32,14 +32,6 @@ app = FastAPI(
 )
 static_dir = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=settings.cors_allow_credentials,
-    allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "Authorization"],
-)
 app.include_router(router)
 
 if settings.rate_limit_enabled:
@@ -48,7 +40,8 @@ if settings.rate_limit_enabled:
 
     @app.middleware("http")
     async def limit_generation_requests(request, call_next):
-        if request.url.path != "/api/v1/generate":
+        # Only generation calls count; CORS preflight (OPTIONS) requests do not
+        if request.url.path != "/api/v1/generate" or request.method != "POST":
             return await call_next(request)
 
         client_ip = request.client.host if request.client else "unknown"
@@ -119,3 +112,14 @@ if settings.prometheus_enabled:
     @app.get("/metrics", include_in_schema=False)
     def metrics() -> Response:
         return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+# Added last so it wraps the middleware above: their responses, such as the
+# rate limit 429, also get CORS headers
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=settings.cors_allow_credentials,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
+)

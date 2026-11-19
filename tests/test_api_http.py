@@ -122,3 +122,37 @@ def test_rate_limit_window_expires(client, monkeypatch):
     assert test_client.post("/api/v1/generate", json=body).status_code == 429
     now[0] += 11
     assert test_client.post("/api/v1/generate", json=body).status_code == 200
+
+
+ORIGIN = "http://localhost:3000"
+PREFLIGHT_HEADERS = {
+    "Origin": ORIGIN,
+    "Access-Control-Request-Method": "POST",
+    "Access-Control-Request-Headers": "content-type",
+}
+
+
+def test_preflight_requests_do_not_use_the_rate_limit(client, monkeypatch):
+    test_client, orchestrator = client
+    monkeypatch.setattr(app_module.settings, "rate_limit_requests", 2)
+    body = {"topic": "Community solar"}
+
+    for _ in range(5):
+        assert test_client.options("/api/v1/generate", headers=PREFLIGHT_HEADERS).status_code == 200
+
+    assert test_client.post("/api/v1/generate", json=body).status_code == 200
+    assert test_client.post("/api/v1/generate", json=body).status_code == 200
+    assert len(orchestrator.calls) == 2
+
+
+def test_rate_limited_response_keeps_cors_headers(client, monkeypatch):
+    test_client, _ = client
+    monkeypatch.setattr(app_module.settings, "rate_limit_requests", 1)
+    body = {"topic": "Community solar"}
+    headers = {"Origin": ORIGIN}
+
+    test_client.post("/api/v1/generate", json=body, headers=headers)
+    blocked = test_client.post("/api/v1/generate", json=body, headers=headers)
+
+    assert blocked.status_code == 429
+    assert blocked.headers["access-control-allow-origin"] == ORIGIN
